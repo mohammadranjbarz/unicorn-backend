@@ -8,4 +8,28 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model User {
+  id         Int      @id @default(autoincrement())
+  subname    String   @unique()
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  records    Record[]
+}
 
+model Record {
+  id         Int        @id @default(autoincrement())
+  key        String
+  value      String
+  userId     Int
+  type       RecordType
+  created_at DateTime   @default(now())
+  updated_at DateTime   @default(now())
+  user       User       @relation(fields: [userId], references: [id])
+
+  @@unique([key, value, userId, type])
+}
+
+enum RecordType {
+  ADDRESS
+  TEXT
+}
