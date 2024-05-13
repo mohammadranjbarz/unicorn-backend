@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Chains } from '../types/chains';
-import { IsEthereumAddress, IsIn } from 'class-validator';
+import { IsEthereumAddress, IsIn, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateSubname {
   @ApiProperty({ description: 'Name of the subname' })
@@ -29,4 +29,70 @@ export class GetSubname {
   @IsEthereumAddress()
   @ApiProperty({ description: 'The safe ethereum address' })
   safe: string;
+}
+
+export class CreateCustomSubnameDataDto {
+  @ApiProperty({ description: 'Label of the subname' })
+  @IsString()
+  label: string;
+
+  @ApiProperty({ description: 'Key for the subname' })
+  @IsString()
+  key: string;
+
+  @ApiProperty({ description: 'Data to be stored' })
+  @IsString()
+  data: string;
+}
+
+export class GetCustomSubnameDataDto {
+  @ApiProperty({ description: 'Label of the subname' })
+  @IsString()
+  label: string;
+
+  @ApiProperty({ description: 'Key associated with the data' })
+  @IsString()
+  key: string;
+}
+
+export class CreateSubnameDto {
+  @ApiProperty({ description: 'Label for the subname' })
+  @IsString()
+  @IsNotEmpty()
+  label: string;
+
+  @ApiProperty({ description: 'Ethereum address' })
+  @IsString()
+  @IsNotEmpty()
+  address: string;
+}
+
+export class GetSubnameMetadataDto {
+  @ApiProperty({ description: 'Label of the subname' })
+  @IsString()
+  label: string;
+
+  @ApiProperty({ description: 'Key for the subname metadata' })
+  @IsString()
+  key: string;
+}
+
+export class CreateTextRecordDto {
+  @ApiProperty({ description: 'Label of the subname' })
+  @IsString()
+  label: string;
+
+  @ApiProperty({ description: 'Key for the text record' })
+  @IsString()
+  key: string;
+
+  @ApiProperty({ description: 'Text to be stored' })
+  @IsString()
+  data: string;
+}
+
+export class GetSubnameResolutionDto {
+  @ApiProperty({ description: 'Ethereum address to resolve subname for' })
+  @IsEthereumAddress()
+  address: string;
 }
