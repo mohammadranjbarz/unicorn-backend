@@ -15,27 +15,24 @@ describe('NsController (e2e)', () => {
     await app.init();
   });
 
-  it('/ns/isAvailable (GET)', () => {
-    return request(app.getHttpServer())
+  it('/ns/isAvailable (GET)', async () => {
+    const response = await request(app.getHttpServer())
       .get('/ns/isAvailable?label=example')
-      .expect(200)
-      .expect({
-        isAvailable: true,
-      });
+      .expect(200);
+    expect(response.body.isAvailable).toBeDefined();
+    expect(response.body.isAvailable).toEqual(true);
   });
 
-  it('/ns/getCustomSubnameData (GET)', () => {
+  it('/ns/getCustomSubnameData (GET)', async () => {
     const label = 'exampleLabel';
     const key = 'exampleKey';
-
-    return request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .get(`/ns/getCustomSubnameData?label=${label}&key=${key}`)
-      .expect(200)
-      .then((response) => {
-        expect(response.body).toMatchObject({
-          data: 'Sample data content', // Expected data content
-        });
-      });
+      .expect(200);
+
+    expect(response.body).toMatchObject({
+      data: 'Sample data content',
+    });
   });
 
   it('/ns/createCustomSubnameData (PUT)', () => {
@@ -56,21 +53,18 @@ describe('NsController (e2e)', () => {
       });
   });
 
-  it('/ns/createSubname (POST)', () => {
-    const subnameData = {
-      label: 'newSubname',
-      address: '0x123456789abcdef',
-    };
-
-    return request(app.getHttpServer())
+  it('/ns/createSubname (POST) - fails on invalid data', async () => {
+    const subnameData = { label: '', address: '0x123' }; // Intentionally faulty data
+    const response = await request(app.getHttpServer())
       .post('/ns/createSubname')
       .send(subnameData)
-      .expect(201)
-      .then((response) => {
-        expect(response.body).toMatchObject({
-          message: 'Subname created successfully.',
-        });
-      });
+      .expect(400);
+
+    expect(response.body).toMatchObject({
+      status: 400,
+      error: 'Bad Request',
+      message: 'Validation failed',
+    });
   });
 
   it('/ns/createTextRecord (PUT)', () => {
