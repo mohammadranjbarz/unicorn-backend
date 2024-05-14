@@ -1,49 +1,71 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-
+import { Injectable } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { map } from 'rxjs/operators';
 import { PrismaService } from 'src/prisma.service';
-import { Chains } from './types/chains';
+import { SubnameResolutionResponse } from 'src/types/ens';
 
 @Injectable()
 export class NsService {
-  private readonly logger = new Logger(NsService.name);
-  constructor(private readonly prismaService: PrismaService) {}
+  private readonly ENS_DOMAIN = process.env.OFFCHAIN_ENS_DOMAIN;
+  private readonly COIN_TYPE = 60; // ETH
 
-  getSafeSubname = async (safe: string) => {
-    const exists = await this.prismaService.user.findFirst({
-      where: {
-        records: {
-          some: {
-            value: safe,
-          },
-        },
-      },
-    });
-    if (!exists) throw new BadRequestException('Invalid address');
-    return exists.subname;
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly httpService: HttpService,
+  ) {}
+
+  getIsNameAvailable(label: string) {
+    const url = `/v1/subname/availability/${label}/${this.ENS_DOMAIN}`;
+    return this.httpService
+      .get<{ isAvailable: boolean }>(url)
+      .pipe(map((response) => response.data));
+  }
+
+  createSubname = async (label: string, address: string) => {
+    return this.httpService
+      .post('/v1/subname/mint', {
+        label,
+        address,
+        domain: process.env.OFFCHAIN_ENS_DOMAIN,
+      })
+      .pipe(map((response) => response.data));
   };
 
-  subnameIsAvailable = async (subname: string) => {
-    const exists = await this.prismaService.user.findFirst({
-      where: { subname: { equals: subname } },
-    });
+  async createTextRecord(label: string, key: string, text: string) {
+    return this.httpService
+      .put<boolean>(
+        `/v1/subname/record/${label}/${this.ENS_DOMAIN}/${key}/${text}`,
+      )
+      .pipe(map((response) => response.data));
+  }
 
-    return !!!exists;
-  };
+  async getSubnameResolution(address: string) {
+    return this.httpService
+      .get<Array<SubnameResolutionResponse>>(
+        `/v1/subname/resolution/${address}/${this.COIN_TYPE}`,
+      )
+      .pipe(map((response) => response.data));
+  }
 
-  createSubname = async (safe: string, subname: string, chain: Chains) => {
-    const user = await this.prismaService.user.create({
-      data: {
-        subname,
-      },
-    });
+  async getSubnameMetadata(label: string, key: string) {
+    return this.httpService
+      .get<{ record: string }>(
+        `/v1/subname/record/${label}/${this.ENS_DOMAIN}/${key}`,
+      )
+      .pipe(map((response) => response.data));
+  }
 
-    const record = await this.prismaService.record.create({
-      data: {
-        type: 'ADDRESS',
-        key: chain,
-        value: safe,
-        userId: user.id,
-      },
-    });
-  };
+  async createCustomSubnameData(label: string, key: string, data: string) {
+    return this.httpService
+      .put<boolean>(`/v1/subname/data/${label}/${this.ENS_DOMAIN}/${key}`, {
+        data,
+      })
+      .pipe(map((response) => response.data));
+  }
+
+  async getCustomSubnameData(label: string, key: string) {
+    return this.httpService
+      .get<string>(`/v1/subname/data/${label}/${this.ENS_DOMAIN}/${key}`)
+      .pipe(map((response) => response.data));
+  }
 }
