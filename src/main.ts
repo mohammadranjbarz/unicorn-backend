@@ -7,7 +7,7 @@ import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
 import { json, urlencoded } from 'express';
 
-const CorsWhitelist = ['https://localhost:3001', 'http://localhost:3000'];
+// const CorsWhitelist = ['https://localhost:3001', 'http://localhost:3000'];
 
 async function bootstrap() {
   // let httpsOptions = undefined;
@@ -46,13 +46,7 @@ async function bootstrap() {
       credentials: true,
       // allowedHeaders: ['Auth'],
       origin: (origin, callback) => {
-        if (
-          !origin ||
-          CorsWhitelist.includes(origin) ||
-          (origin.includes('vercel.app') && origin.includes('unicorn'))
-        )
-          return callback(null, true);
-        return callback(new Error('Not allowed by CORS'));
+        return callback(null, true);
       },
     }),
   );
