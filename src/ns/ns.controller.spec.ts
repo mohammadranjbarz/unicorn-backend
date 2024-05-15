@@ -1,20 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { PoapModule } from './poap.module';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
+import { NsModule } from './ns.module';
 
-describe('NsController (e2e)', () => {
+describe('PoapController', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        PoapModule,
-        HttpModule,
-        ConfigModule.forRoot({ isGlobal: true }),
-      ],
+      imports: [NsModule, HttpModule, ConfigModule.forRoot({ isGlobal: true })],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -25,9 +21,11 @@ describe('NsController (e2e)', () => {
     await app.close();
   });
 
-  it('should get subname resolution (GET)', async () => {
+  it('/ns/getSubnameResolution (GET)', async () => {
     const response = await request(app.getHttpServer())
-      .get('/poap/user/0x356C0502b1e120817488CA6F3230f96bFe1b1871')
+      .get(
+        '/ns/getSubnameResolution?address=0x356C0502b1e120817488CA6F3230f96bFe1b1871',
+      )
       .expect(200);
 
     expect(response.body).toHaveProperty('data');

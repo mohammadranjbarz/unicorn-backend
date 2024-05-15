@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 import { PrismaService } from 'src/prisma.service';
 import { SubnameResolutionResponse } from 'src/types/ens';
+import { firstValueFrom } from 'rxjs';
+import { throwError } from 'rxjs';
 
 @Injectable()
 export class NsService {
@@ -14,58 +16,87 @@ export class NsService {
     private readonly httpService: HttpService,
   ) {}
 
-  getIsNameAvailable(label: string) {
+  async getIsNameAvailable(label: string) {
     const url = `/v1/subname/availability/${label}/${this.ENS_DOMAIN}`;
-    return this.httpService
-      .get<{ isAvailable: boolean }>(url)
-      .pipe(map((response) => response.data));
+    try {
+      const response = await firstValueFrom(
+        this.httpService
+          .get<{ isAvailable: boolean }>(url)
+          .pipe(map((response) => response.data.isAvailable)),
+      );
+      return response;
+    } catch (error: any) {
+      throwError(() => new Error(error));
+    }
   }
 
-  createSubname = async (label: string, address: string) => {
-    return this.httpService
-      .post('/v1/subname/mint', {
-        label,
-        address,
-        domain: process.env.OFFCHAIN_ENS_DOMAIN,
-      })
-      .pipe(map((response) => response.data));
-  };
-
-  async createTextRecord(label: string, key: string, text: string) {
-    return this.httpService
-      .put<boolean>(
-        `/v1/subname/record/${label}/${this.ENS_DOMAIN}/${key}/${text}`,
-      )
-      .pipe(map((response) => response.data));
+  async createSubname(label: string, address: string): Promise<any> {
+    return firstValueFrom(
+      this.httpService
+        .post('/v1/subname/mint', {
+          label,
+          address,
+          domain: this.ENS_DOMAIN,
+        })
+        .pipe(map((response) => response.data)),
+    );
   }
 
-  async getSubnameResolution(address: string) {
-    return this.httpService
-      .get<Array<SubnameResolutionResponse>>(
-        `/v1/subname/resolution/${address}/${this.COIN_TYPE}`,
-      )
-      .pipe(map((response) => response.data));
+  async createTextRecord(
+    label: string,
+    key: string,
+    text: string,
+  ): Promise<boolean> {
+    return firstValueFrom(
+      this.httpService
+        .put<boolean>(
+          `/v1/subname/record/${label}/${this.ENS_DOMAIN}/${key}/${text}`,
+        )
+        .pipe(map((response) => response.data)),
+    );
   }
 
-  async getSubnameMetadata(label: string, key: string) {
-    return this.httpService
-      .get<{ record: string }>(
-        `/v1/subname/record/${label}/${this.ENS_DOMAIN}/${key}`,
-      )
-      .pipe(map((response) => response.data));
+  async getSubnameResolution(
+    address: string,
+  ): Promise<Array<SubnameResolutionResponse>> {
+    return firstValueFrom(
+      this.httpService
+        .get<Array<SubnameResolutionResponse>>(
+          `/v1/subname/resolution/${address}/${this.COIN_TYPE}`,
+        )
+        .pipe(map((response) => response.data)),
+    );
   }
 
-  async createCustomSubnameData(label: string, key: string, data: string) {
-    return this.httpService
-      .put<boolean>(`/v1/subname/data/${label}/${this.ENS_DOMAIN}/${key}`, {
-        data,
-      })
-      .pipe(map((response) => response.data));
+  async getSubnameMetadata(label: string, key: string): Promise<string> {
+    return firstValueFrom(
+      this.httpService
+        .get<{ record: string }>(
+          `/v1/subname/record/${label}/${this.ENS_DOMAIN}/${key}`,
+        )
+        .pipe(map((response) => response.data.record)),
+    );
   }
 
-  async getCustomSubnameData(label: string, key: string) {
-    return this.httpService
-      .get<string>(`/v1/subname/data/${label}/${this.ENS_DOMAIN}/${key}`)
-      .pipe(map((response) => response.data));
+  async createCustomSubnameData(
+    label: string,
+    key: string,
+    data: string,
+  ): Promise<boolean> {
+    return firstValueFrom(
+      this.httpService
+        .put<boolean>(`/v1/subname/data/${label}/${this.ENS_DOMAIN}/${key}`, {
+          data,
+        })
+        .pipe(map((response) => response.data)),
+    );
+  }
+
+  async getCustomSubnameData(label: string, key: string): Promise<string> {
+    return firstValueFrom(
+      this.httpService
+        .get<string>(`/v1/subname/data/${label}/${this.ENS_DOMAIN}/${key}`)
+        .pipe(map((response) => response.data)),
+    );
   }
 }
