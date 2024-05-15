@@ -25,15 +25,6 @@ export class NsController {
   private readonly logger = new Logger(NsController.name);
   constructor(private readonly nsService: NsService) {}
 
-  // @ApiResponse({
-  //   status: 401,
-  //   description: "You're not logged in",
-  // })
-  // @ApiResponse({
-  //   status: 200,
-  //   description: "You're logged in and the user object is returned",
-  // })
-
   // AVAILABILITY API ----------
   @Get('/isAvailable')
   async isAvailable(@Query('label') label: string) {
