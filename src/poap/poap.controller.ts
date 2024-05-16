@@ -18,8 +18,12 @@ export class PoapController {
   @Get('user/:address')
   async getUserPOAPs(@Param('address') address: string) {
     try {
-      const poaps = await this.poapService.getUserPOAPs(address);
-      return poaps;
+      const data = await this.poapService.getUserPOAPs(address);
+      return {
+        data,
+        status: 'success',
+        message: 'Poaps retrieved successfully',
+      };
     } catch (error) {
       console.log({ error });
       throw new HttpException(
@@ -32,9 +36,14 @@ export class PoapController {
   @Post('event/qr-codes')
   async postEventQRCodes(@Headers('Authorization') token: string) {
     try {
-      const result = await this.poapService.postEventQRCodes(token);
-      if (result) {
-        return { status: 'success', message: 'QR codes posted successfully' };
+      console.log({ token });
+      const data = await this.poapService.postEventQRCodes(token);
+      if (data) {
+        return {
+          data,
+          status: 'success',
+          message: 'QR codes posted successfully',
+        };
       } else {
         throw new HttpException(
           'Failed to post QR codes',
@@ -55,9 +64,10 @@ export class PoapController {
     @Headers('Authorization') token: string,
   ) {
     try {
-      const result = await this.poapService.getActionsClaimQr(qr_hash, token);
-      if (result) {
+      const data = await this.poapService.getActionsClaimQr(qr_hash, token);
+      if (data) {
         return {
+          data,
           status: 'success',
           message: 'Claim QR retrieved successfully',
         };
@@ -81,9 +91,13 @@ export class PoapController {
     @Headers('Authorization') token: string,
   ) {
     try {
-      const result = await this.poapService.postActionsClaimQr(body, token);
-      if (result) {
-        return { status: 'success', message: 'Claim QR posted successfully' };
+      const data = await this.poapService.postActionsClaimQr(body, token);
+      if (data) {
+        return {
+          data,
+          status: 'success',
+          message: 'Claim QR posted successfully',
+        };
       } else {
         throw new HttpException(
           'Failed to post claim QR',
@@ -101,9 +115,10 @@ export class PoapController {
   @Get('actions/scan/:address')
   async getActionsScan(@Param('address') address: string) {
     try {
-      const result = await this.poapService.getActionsScan(address);
-      if (result) {
+      const data = await this.poapService.getActionsScan(address);
+      if (data) {
         return {
+          data,
           status: 'success',
           message: 'Scan action retrieved successfully',
         };
@@ -124,9 +139,10 @@ export class PoapController {
   @Post('oauth/token')
   async postOauthToken() {
     try {
-      const result = await this.poapService.postOauthToken();
-      if (result) {
+      const data = await this.poapService.postOauthToken();
+      if (data) {
         return {
+          data,
           status: 'success',
           message: 'OAuth token retrieved successfully',
         };
