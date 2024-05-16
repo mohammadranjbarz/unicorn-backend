@@ -2,14 +2,21 @@ import { Module } from '@nestjs/common';
 import { PoapService } from './poap.service';
 import { PoapController } from './poap.controller';
 import { HttpModule } from '@nestjs/axios';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    HttpModule.register({
-      baseURL: process.env.POAP_BASE_URL,
-      headers: {
-        'Content-type': 'application/json',
-        'X-API-Key': process.env.POAP_API_KEY,
+    HttpModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        return {
+          baseURL: configService.get('POAP_BASE_URL'),
+          headers: {
+            'Content-type': 'application/json',
+            'X-API-Key': configService.get('POAP_API_KEY'),
+          },
+        };
       },
     }),
   ],

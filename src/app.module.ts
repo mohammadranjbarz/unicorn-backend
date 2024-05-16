@@ -7,10 +7,11 @@ import { AuthModule } from './auth/auth.module';
 import { NsModule } from './ns/ns.module';
 import { PoapModule } from './poap/poap.module';
 import { PricingModule } from './pricing/pricing.module';
+import config from './utils/config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true, load: [config] }),
     AuthModule,
     // UsersModule,
     NsModule,
