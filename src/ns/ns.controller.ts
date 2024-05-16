@@ -7,6 +7,8 @@ import {
   Logger,
   Post,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 
 import { NsService } from './ns.service';
@@ -19,11 +21,18 @@ import {
   GetSubnameResolutionDto,
 } from './dto/ns.dto';
 import { ApiResponse } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ConfigService } from '@nestjs/config';
+import * as FormData from 'form-data';
+import axios from 'axios';
 
 @Controller({ path: 'ns' })
 export class NsController {
   private readonly logger = new Logger(NsController.name);
-  constructor(private readonly nsService: NsService) {}
+  constructor(
+    private readonly nsService: NsService,
+    private readonly configService: ConfigService,
+  ) {}
 
   // AVAILABILITY API ----------
   @Get('/isAvailable')
@@ -111,6 +120,42 @@ export class NsController {
     } catch (error) {
       this.logger.error('Failed to retrieve subname metadata', error);
       throw new BadRequestException('Failed to retrieve subname metadata');
+    }
+  }
+
+  @Post('upload-image')
+  @UseInterceptors(FileInterceptor('data'))
+  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+    const maxSize = 10 * 1024 * 1024; // 10mb
+    const validMimeTypes = ['image/jpeg', 'image/webp', 'image/png'];
+
+    if (!validMimeTypes.includes(file.mimetype))
+      throw new BadRequestException('Image format not supported!');
+
+    if (file.size > maxSize)
+      throw new BadRequestException('Image size is too big.');
+
+    const data = new FormData();
+    const stream = file.buffer;
+    data.append('file', stream, {
+      filename: file.originalname,
+      contentType: file.mimetype,
+    });
+    try {
+      const response = await axios.post(
+        this.configService.get('PINATA_UPLOAD_URL')!,
+        data,
+        {
+          headers: {
+            ['Content-Type']: `multipart/form-data`,
+            Authorization: `Bearer ${this.configService.get('PINATA_JWT')}`,
+          },
+        },
+      );
+
+      return response.data;
+    } catch (e) {
+      console.error(e);
     }
   }
 
