@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { NsModule } from './ns/ns.module';
 import { PoapModule } from './poap/poap.module';
 import { PricingModule } from './pricing/pricing.module';
+import { SporkDAOMoudle } from './spork/spork.module';
 import config from './utils/config';
 
 @Module({
@@ -14,6 +15,7 @@ import config from './utils/config';
     ConfigModule.forRoot({ isGlobal: true, load: [config] }),
     AuthModule,
     // UsersModule,
+    SporkDAOMoudle,
     NsModule,
     PricingModule,
     PoapModule,
