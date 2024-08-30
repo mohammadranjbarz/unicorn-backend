@@ -28,7 +28,7 @@ export class AuthController {
   })
   @Get('/isLoggedIn')
   async isLoggedIn(@Req() req: AuthedReq) {
-    return req.userId;
+    return req.userId || 'foo';
   }
 
   @Post('/logout')

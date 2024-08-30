@@ -23,7 +23,10 @@ export class SporkDAOController {
       };
     } catch (error) {
       console.log({ error });
-      throw new HttpException('Failed to get', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Failed to get',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -37,10 +40,39 @@ export class SporkDAOController {
           status: 'success',
         };
       } else {
-        throw new HttpException('Failed to post ', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          'Failed to post ',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       }
     } catch (error) {
-      throw new HttpException('Failed to post', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Failed to post',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('api/airdrop')
+  async airdropSpork(@Body() body: { address: string; amount: string }) {
+    try {
+      const data = await this.sporkDAOService.airDropSpork(
+        body.address,
+        body.amount,
+      );
+      if (data) {
+        return {
+          data,
+          status: 'success',
+        };
+      } else {
+        throw new HttpException('Failed to post ', HttpStatus.BAD_REQUEST);
+      }
+    } catch (error: any) {
+      throw new HttpException(
+        error?.message || 'Failed to post ',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

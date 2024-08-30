@@ -25,6 +25,8 @@ interface AppConfig {
   OFFCHAIN_ENS_DOMAIN: string;
   PINATA_UPLOAD_URL: string;
   GATEWAY_URL: string;
+  THIRDWEB_CLIENT_ID: string;
+  THIRDWEB_WALLET_PRIVATE_KEY: string;
 }
 
 const config: Config = {
@@ -48,6 +50,8 @@ const config: Config = {
     OFFCHAIN_ENS_DOMAIN: process.env.OFFCHAIN_ENS_DOMAIN,
     PINATA_UPLOAD_URL: process.env.PINATA_UPLOAD_URL,
     GATEWAY_URL: process.env.GATEWAY_URL,
+    THIRDWEB_CLIENT_ID: process.env.THIRDWEB_CLIENT_ID,
+    THIRDWEB_WALLET_PRIVATE_KEY: process.env.THIRDWEB_WALLET_PRIVATE_KEY,
   },
 };
 
