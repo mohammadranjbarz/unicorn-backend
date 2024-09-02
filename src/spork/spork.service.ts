@@ -10,7 +10,7 @@ import {
 } from 'thirdweb';
 import { polygon } from 'thirdweb/chains';
 import { privateKeyAccount, privateKeyToAccount } from 'thirdweb/wallets';
-import { approve } from 'thirdweb/extensions/erc20';
+import { approve, getBalance } from 'thirdweb/extensions/erc20';
 import { transferFrom } from 'thirdweb/extensions/erc20';
 import { ConfigService } from '@nestjs/config';
 
@@ -58,7 +58,6 @@ export class SporkDAOService {
       const privateKey = this.configService.get('THIRDWEB_WALLET_PRIVATE_KEY');
       if (!clientId || !privateKey) throw new Error('No thirdweb credentials');
       if (!address || !amount) throw new Error('Invalid address or amount');
-
       const client = createThirdwebClient({
         clientId: clientId,
       });
@@ -72,6 +71,14 @@ export class SporkDAOService {
         chain: polygon,
         client,
       });
+      const sporkBalance = await getBalance({
+        address,
+        contract: sporkTokenContract,
+      });
+      if (sporkBalance.value >= BigInt(1)) {
+        return { success: false, transactionHash: '' };
+      }
+
       const approveTransaction = await approve({
         contract: sporkTokenContract,
         spender: account.address,
@@ -90,7 +97,7 @@ export class SporkDAOService {
         amount,
       });
 
-      const { transactionHash } = await sendTransaction({
+      const { transactionHash } = await sendAndConfirmTransaction({
         transaction,
         account,
       });
