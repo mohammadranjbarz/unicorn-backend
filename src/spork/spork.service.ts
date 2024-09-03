@@ -75,7 +75,7 @@ export class SporkDAOService {
         address,
         contract: sporkTokenContract,
       });
-      if (sporkBalance.value >= BigInt(1)) {
+      if (Number(sporkBalance.displayValue) >= 1) {
         return { success: false, transactionHash: '' };
       }
 
