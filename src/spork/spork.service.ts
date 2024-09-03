@@ -6,15 +6,15 @@ import {
   createThirdwebClient,
   getContract,
   sendAndConfirmTransaction,
-  sendTransaction,
 } from 'thirdweb';
 import { polygon } from 'thirdweb/chains';
-import { privateKeyAccount, privateKeyToAccount } from 'thirdweb/wallets';
+import { privateKeyToAccount } from 'thirdweb/wallets';
 import { approve, getBalance } from 'thirdweb/extensions/erc20';
 import { transferFrom } from 'thirdweb/extensions/erc20';
 import { ConfigService } from '@nestjs/config';
 
 const SPORK_ADDRESS = '0x9CA6a77C8B38159fd2dA9Bd25bc3E259C33F5E39';
+const addressToIsAirdroppingMap: Record<string, boolean> = {};
 
 @Injectable()
 export class SporkDAOService {
@@ -58,12 +58,18 @@ export class SporkDAOService {
       const privateKey = this.configService.get('THIRDWEB_WALLET_PRIVATE_KEY');
       if (!clientId || !privateKey) throw new Error('No thirdweb credentials');
       if (!address || !amount) throw new Error('Invalid address or amount');
+
+      if (addressToIsAirdroppingMap[address])
+        return { success: false, transactionHash: '' };
+
+      addressToIsAirdroppingMap[address] = true;
+
       const client = createThirdwebClient({
         clientId: clientId,
       });
       const account = privateKeyToAccount({
         client,
-        privateKey: privateKey,
+        privateKey,
       });
 
       const sporkTokenContract = getContract({
@@ -71,11 +77,14 @@ export class SporkDAOService {
         chain: polygon,
         client,
       });
+
       const sporkBalance = await getBalance({
         address,
         contract: sporkTokenContract,
       });
+
       if (Number(sporkBalance.displayValue) >= 1) {
+        delete addressToIsAirdroppingMap[address];
         return { success: false, transactionHash: '' };
       }
 
@@ -102,8 +111,10 @@ export class SporkDAOService {
         account,
       });
 
+      delete addressToIsAirdroppingMap[address];
       return { success: true, transactionHash };
     } catch (error: any) {
+      delete addressToIsAirdroppingMap[address];
       console.log(error);
       throw new Error(error);
     }
