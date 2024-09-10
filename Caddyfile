@@ -1,0 +1,3 @@
+{$BACKEND_URL} {
+  reverse_proxy unicorn-backend:3000
+}
