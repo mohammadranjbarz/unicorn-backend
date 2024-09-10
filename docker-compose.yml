@@ -33,3 +33,5 @@ volumes:
 
 networks:
   unicorn-backend:
+    name: unicorn-backend
+    external: true
