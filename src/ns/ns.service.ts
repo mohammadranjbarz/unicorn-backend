@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { map, catchError } from 'rxjs/operators';
-import { PrismaService } from 'src/prisma.service';
 import { SubnameResolutionResponse } from 'src/types/ens';
 import { firstValueFrom } from 'rxjs';
 import { throwError } from 'rxjs';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class NsService {

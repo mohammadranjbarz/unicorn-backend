@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import { PrismaService } from 'src/prisma.service';
 import { TokenSymbols } from './types/tokens';
 import { getTokenPrices } from '@giveth/monoswap';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class PricingService {

@@ -8,7 +8,11 @@ import { NsModule } from './ns/ns.module';
 import { PoapModule } from './poap/poap.module';
 import { PricingModule } from './pricing/pricing.module';
 import { SporkDAOMoudle } from './spork/spork.module';
+import { AccountService } from './account/account.service';
+import { PrismaModule } from './prisma/prisma.module';
 import config from './utils/config';
+import { PrismaService } from './prisma/prisma.service';
+import { AccountController } from './account/account.controller';
 
 @Module({
   imports: [
@@ -19,8 +23,9 @@ import config from './utils/config';
     NsModule,
     PricingModule,
     PoapModule,
+    PrismaModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, AccountController],
+  providers: [AppService, PrismaService, AccountService],
 })
 export class AppModule {}

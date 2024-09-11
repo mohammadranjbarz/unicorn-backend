@@ -1,11 +1,11 @@
 import { Controller, Get, Post, Logger, Res, Req } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
-import { PrismaService } from 'src/prisma.service';
 import { Response } from 'express';
 import { UsersService } from 'src/user/users.service';
 import { ApiResponse } from '@nestjs/swagger';
 import { AuthedReq } from 'src/utils/types/AuthedReq.type';
+import { PrismaService } from 'src/prisma/prisma.service';
 // import { STAGING_API } from 'src/utils';
 // import { FlowService } from 'src/flow/flow.service';
 

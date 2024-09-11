@@ -4,7 +4,7 @@ import { PricingService } from './pricing.service';
 import { PricingController } from './pricing.controller';
 import { UsersService } from 'src/user/users.service';
 import { UsersModule } from 'src/user/users.module';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({
   imports: [UsersModule],
