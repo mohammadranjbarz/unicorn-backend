@@ -10,7 +10,7 @@ export class AccountController {
   @Post()
   async createAccount(
     @Body('address') address: string,
-    @Body('verifier') verifier: string,
+    @Body('verifier_address') verifier_address: string,
     @Body('email') email: string,
     @Body('profile_image') profile_image?: string,
     @Body('username') username?: string,
@@ -18,11 +18,11 @@ export class AccountController {
   ) {
     return this.accountService.createAccount({
       address,
-      verifier,
+      verifier_address,
       email,
       profile_image,
       username,
-      subscriptions,
+      subscriptions: subscriptions || [],
     });
   }
 
@@ -39,12 +39,20 @@ export class AccountController {
     @Body('username') username?: string,
     @Body('profile_image') profile_image?: string,
     @Body('subscriptions') subscriptions?: string[],
+    @Body('first_name') first_name?: string,
+    @Body('last_name') last_name?: string,
+    @Body('country') country?: string,
+    @Body('got_airdropped') got_airdropped?: boolean,
   ) {
     return this.accountService.updateAccount(
       identifier,
       username,
       profile_image,
       subscriptions,
+      first_name,
+      last_name,
+      country,
+      got_airdropped,
     );
   }
 }
