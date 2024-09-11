@@ -33,3 +33,18 @@ enum RecordType {
   ADDRESS
   TEXT
 }
+
+
+model Account {
+  id           Int      @id @default(autoincrement())
+  address      String   @unique
+  verifier     String   @unique
+  email        String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  profile_image String?
+  username     String?
+
+  @@index([address])
+  @@index([verifier])
+}
