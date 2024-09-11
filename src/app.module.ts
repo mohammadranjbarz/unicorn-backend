@@ -13,6 +13,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import config from './utils/config';
 import { PrismaService } from './prisma/prisma.service';
 import { AccountController } from './account/account.controller';
+import { AccountModule } from './account/account.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AccountController } from './account/account.controller';
     NsModule,
     PricingModule,
     PoapModule,
+    AccountModule,
     PrismaModule,
   ],
   controllers: [AppController, AccountController],
