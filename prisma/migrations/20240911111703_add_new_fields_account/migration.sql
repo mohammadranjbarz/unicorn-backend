@@ -1,5 +1,0 @@
--- AlterTable
-ALTER TABLE "Account" ALTER COLUMN "country" DROP NOT NULL,
-ALTER COLUMN "first_name" DROP NOT NULL,
-ALTER COLUMN "got_airdropped" DROP NOT NULL,
-ALTER COLUMN "last_name" DROP NOT NULL;
