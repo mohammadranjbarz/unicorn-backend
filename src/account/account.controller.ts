@@ -14,6 +14,7 @@ export class AccountController {
     @Body('email') email: string,
     @Body('profile_image') profile_image?: string,
     @Body('username') username?: string,
+    @Body('subscriptions') subscriptions?: string[],
   ) {
     return this.accountService.createAccount({
       address,
@@ -21,6 +22,7 @@ export class AccountController {
       email,
       profile_image,
       username,
+      subscriptions,
     });
   }
 
@@ -36,11 +38,13 @@ export class AccountController {
     @Param('identifier') identifier: string,
     @Body('username') username?: string,
     @Body('profile_image') profile_image?: string,
+    @Body('subscriptions') subscriptions?: string[],
   ) {
     return this.accountService.updateAccount(
       identifier,
       username,
       profile_image,
+      subscriptions,
     );
   }
 }
