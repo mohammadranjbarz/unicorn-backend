@@ -32,7 +32,7 @@ export class AccountService {
   async getAccountByAddressOrVerifier(identifier: string) {
     const account = await this.prisma.account.findFirst({
       where: {
-        OR: [{ address: identifier }, { verifier_address: identifier }],
+        OR: [{ address: identifier }, { verifier: identifier }],
       },
     });
 
@@ -49,14 +49,10 @@ export class AccountService {
     username?: string,
     profile_image?: string,
     subscriptions?: string[],
-    first_name?: string,
-    last_name?: string,
-    country?: string,
-    got_airdropped?: boolean,
   ) {
     const account = await this.prisma.account.findFirst({
       where: {
-        OR: [{ address: identifier }, { verifier_address: identifier }],
+        OR: [{ address: identifier }, { verifier: identifier }],
       },
     });
 
@@ -70,10 +66,6 @@ export class AccountService {
         username,
         profile_image,
         subscriptions,
-        first_name,
-        last_name,
-        country,
-        got_airdropped,
       },
     });
   }
