@@ -48,6 +48,7 @@ export class AccountService {
     identifier: string,
     username?: string,
     profile_image?: string,
+    subscriptions?: string[],
   ) {
     const account = await this.prisma.account.findFirst({
       where: {
@@ -64,6 +65,7 @@ export class AccountService {
       data: {
         username,
         profile_image,
+        subscriptions,
       },
     });
   }

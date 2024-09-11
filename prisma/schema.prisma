@@ -44,6 +44,7 @@ model Account {
   updated_at   DateTime @updatedAt
   profile_image String?
   username     String?
+  subscriptions  String[]
 
   @@index([address])
   @@index([verifier])
