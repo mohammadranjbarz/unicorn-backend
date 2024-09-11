@@ -38,14 +38,18 @@ enum RecordType {
 model Account {
   id           Int      @id @default(autoincrement())
   address      String   @unique
-  verifier     String   @unique
+  verifier_address     String   @unique
   email        String
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
   profile_image String?
   username     String?
   subscriptions  String[]
+  first_name String?
+  last_name String?
+  country String?
+  got_airdropped Boolean?
 
   @@index([address])
-  @@index([verifier])
+  @@index([verifier_address])
 }
