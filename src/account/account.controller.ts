@@ -36,6 +36,11 @@ export class AccountController {
   }
   @Get('/check')
   async getAccountByHandle(@Query('domain') handle: string) {
+    const subname = handle?.split('.')[0];
+    if (subname === 'app')
+      return {
+        status: 'ok',
+      };
     const account = await this.accountService.findByHandle(handle);
 
     // If no account is found, throw a 404 error
@@ -43,7 +48,10 @@ export class AccountController {
       throw new NotFoundException(`Account with handle '${handle}' not found`);
     }
 
-    return account;
+    return {
+      data: account,
+      status: 'ok',
+    };
   }
   // Get account by address or verifier
   @Get(':identifier')
