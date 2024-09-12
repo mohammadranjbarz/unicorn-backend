@@ -1,10 +1,21 @@
 services:
-  unicorn-backend:
+  unicorn-backend1:
     image: ghcr.io/generalmagicio/unicorn-be:main
-    container_name: unicorn-backend
+    container_name: unicorn-backend1
     restart: always
     ports:
-      - 3000:3000
+      - 3000
+    env_file:
+      - .env
+    networks:
+      - unicorn-backend
+
+  unicorn-backend2:
+    image: ghcr.io/generalmagicio/unicorn-be:main
+    container_name: unicorn-backend2
+    restart: always
+    ports:
+      - 3000
     env_file:
       - .env
     networks:
@@ -23,6 +34,7 @@ services:
       - .env
     environment:
       - BACKEND_URL=${BACKEND_URL:-}
+      - IP_WHITELIST=${IP_WHITELIST:-0.0.0.0/0}
     volumes:
       - caddy_data:/data
       - caddy_config:/config
