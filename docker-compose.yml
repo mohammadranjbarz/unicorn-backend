@@ -1,7 +1,6 @@
 services:
   unicorn-backend:
-    build:
-      context: .
+    image: ghcr.io/generalmagicio/unicorn-be:main
     container_name: unicorn-backend
     restart: always
     ports:
@@ -21,7 +20,7 @@ services:
     env_file:
       - .env
     environment:
-      - MY_URL=${BACKEND_URL:-}
+      - BACKEND_URL=${BACKEND_URL:-}
     volumes:
       - caddy_data:/data
       - caddy_config:/config
