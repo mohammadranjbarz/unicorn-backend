@@ -8,6 +8,7 @@ import {
   Param,
   NotFoundException,
   Query,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
 
@@ -41,11 +42,16 @@ export class AccountController {
       return {
         status: 'ok',
       };
+    if (!handle) {
+      throw new InternalServerErrorException(`Domain can't be empty`);
+    }
     const account = await this.accountService.findByHandle(handle);
 
     // If no account is found, throw a 404 error
     if (!account) {
-      throw new NotFoundException(`Account with handle '${handle}' not found`);
+      throw new InternalServerErrorException(
+        `Account with handle '${handle}' not found`,
+      );
     }
 
     return {
