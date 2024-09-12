@@ -43,7 +43,7 @@ model Account {
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
   profile_image String?
-  username     String?
+  handle     String?
   subscriptions  String[]
   first_name String?
   last_name String?

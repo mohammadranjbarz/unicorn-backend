@@ -46,7 +46,7 @@ export class AccountService {
   // Update username or profile_image
   async updateAccount(
     identifier: string,
-    username?: string,
+    handle?: string,
     profile_image?: string,
     subscriptions?: string[],
     first_name?: string,
@@ -67,7 +67,7 @@ export class AccountService {
     return this.prisma.account.update({
       where: { id: account.id },
       data: {
-        username,
+        handle,
         profile_image,
         subscriptions,
         first_name,
@@ -75,6 +75,12 @@ export class AccountService {
         country,
         got_airdropped,
       },
+    });
+  }
+
+  async findByHandle(handle: string) {
+    return await this.prisma.account.findFirstOrThrow({
+      where: { handle: handle },
     });
   }
 }
