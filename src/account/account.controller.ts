@@ -1,5 +1,14 @@
 // src/account/account.controller.ts
-import { Controller, Post, Get, Patch, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Patch,
+  Body,
+  Param,
+  NotFoundException,
+  Query,
+} from '@nestjs/common';
 import { AccountService } from './account.service';
 
 @Controller('account')
@@ -13,7 +22,7 @@ export class AccountController {
     @Body('verifier_address') verifier_address: string,
     @Body('email') email: string,
     @Body('profile_image') profile_image?: string,
-    @Body('username') username?: string,
+    @Body('handle') handle?: string,
     @Body('subscriptions') subscriptions?: string[],
   ) {
     return this.accountService.createAccount({
@@ -21,11 +30,21 @@ export class AccountController {
       verifier_address,
       email,
       profile_image,
-      username,
+      handle,
       subscriptions: subscriptions || [],
     });
   }
+  @Get('/check')
+  async getAccountByHandle(@Query('domain') handle: string) {
+    const account = await this.accountService.findByHandle(handle);
 
+    // If no account is found, throw a 404 error
+    if (!account) {
+      throw new NotFoundException(`Account with handle '${handle}' not found`);
+    }
+
+    return account;
+  }
   // Get account by address or verifier
   @Get(':identifier')
   async getAccount(@Param('identifier') identifier: string) {
@@ -36,7 +55,7 @@ export class AccountController {
   @Patch(':identifier')
   async updateAccount(
     @Param('identifier') identifier: string,
-    @Body('username') username?: string,
+    @Body('handle') handle?: string,
     @Body('profile_image') profile_image?: string,
     @Body('subscriptions') subscriptions?: string[],
     @Body('first_name') first_name?: string,
@@ -46,7 +65,7 @@ export class AccountController {
   ) {
     return this.accountService.updateAccount(
       identifier,
-      username,
+      handle,
       profile_image,
       subscriptions,
       first_name,
