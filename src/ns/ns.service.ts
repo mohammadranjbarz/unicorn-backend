@@ -8,7 +8,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class NsService {
-  private readonly ENS_DOMAIN = process.env.OFFCHAIN_ENS_DOMAIN;
+  private readonly ENS_DOMAIN = 'account.eth';
   private readonly COIN_TYPE = 60; // ETH
 
   constructor(
