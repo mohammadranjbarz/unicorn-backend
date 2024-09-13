@@ -35,6 +35,7 @@ export class AccountController {
       subscriptions: subscriptions || [],
     });
   }
+
   @Get('/check')
   async getAccountByHandle(@Query('domain') handle: string) {
     const subname = handle?.split('.')[0];
@@ -58,6 +59,10 @@ export class AccountController {
       data: account,
       status: 'ok',
     };
+  }
+  @Post('/delete-all-accounts')
+  async deleteAccounts() {
+    return this.accountService.deleteAccounts();
   }
   // Get account by address or verifier
   @Get(':identifier')

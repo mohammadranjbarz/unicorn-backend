@@ -27,6 +27,18 @@ export class AccountService {
       throw error; // Propagate any other errors
     }
   }
+  // delete accounts
+  async deleteAccounts() {
+    try {
+      return await this.prisma.account.deleteMany({});
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        // Prisma error code for unique constraint violation
+        throw new ConflictException('Failed to delete accounts');
+      }
+      throw error; // Propagate any other errors
+    }
+  }
 
   // Get account by address or verifier
   async getAccountByAddressOrVerifier(identifier: string) {
