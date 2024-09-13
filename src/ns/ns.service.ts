@@ -19,6 +19,7 @@ export class NsService {
   async getIsNameAvailable(label: string) {
     const url = `/v1/subname/availability/${label}/${this.ENS_DOMAIN}`;
     try {
+      return true;
       const response = await firstValueFrom(
         this.httpService
           .get<{ isAvailable: boolean }>(url)
