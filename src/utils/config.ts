@@ -47,7 +47,7 @@ const config: Config = {
     POAP_CLIENT_ID: process.env.POAP_CLIENT_ID,
     OFFCHAIN_API_KEY: process.env.OFFCHAIN_API_KEY,
     OFFCHAIN_BASE_URL: process.env.OFFCHAIN_BASE_URL,
-    OFFCHAIN_ENS_DOMAIN: process.env.OFFCHAIN_ENS_DOMAIN || 'account.eth',
+    OFFCHAIN_ENS_DOMAIN: 'account.eth' || process.env.OFFCHAIN_ENS_DOMAIN,
     PINATA_UPLOAD_URL: process.env.PINATA_UPLOAD_URL,
     GATEWAY_URL: process.env.GATEWAY_URL,
     THIRDWEB_CLIENT_ID: process.env.THIRDWEB_CLIENT_ID,
