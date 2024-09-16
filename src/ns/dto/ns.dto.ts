@@ -43,6 +43,10 @@ export class CreateCustomSubnameDataDto {
   @ApiProperty({ description: 'Data to be stored' })
   @IsString()
   data: string;
+
+  @ApiProperty({ description: 'Domain to be stored' })
+  @IsString()
+  domain: string;
 }
 
 export class GetCustomSubnameDataDto {
@@ -53,6 +57,10 @@ export class GetCustomSubnameDataDto {
   @ApiProperty({ description: 'Key associated with the data' })
   @IsString()
   key: string;
+
+  @ApiProperty({ description: 'Domain to be stored' })
+  @IsString()
+  domain: string;
 }
 
 export class CreateSubnameDto {
@@ -65,6 +73,10 @@ export class CreateSubnameDto {
   @IsString()
   @IsNotEmpty()
   address: string;
+
+  @ApiProperty({ description: 'Domain to be stored' })
+  @IsString()
+  domain: string;
 }
 
 export class GetSubnameMetadataDto {
@@ -75,6 +87,10 @@ export class GetSubnameMetadataDto {
   @ApiProperty({ description: 'Key for the subname metadata' })
   @IsString()
   key: string;
+
+  @ApiProperty({ description: 'Domain to be stored' })
+  @IsString()
+  domain: string;
 }
 
 export class CreateTextRecordDto {
@@ -89,6 +105,10 @@ export class CreateTextRecordDto {
   @ApiProperty({ description: 'Text to be stored' })
   @IsString()
   data: string;
+
+  @ApiProperty({ description: 'Domain to be stored' })
+  @IsString()
+  domain: string;
 }
 
 export class GetSubnameResolutionDto {

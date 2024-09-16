@@ -36,9 +36,12 @@ export class NsController {
 
   // AVAILABILITY API ----------
   @Get('/isAvailable')
-  async isAvailable(@Query('label') label: string) {
+  async isAvailable(
+    @Query('label') label: string,
+    @Query('domain') domain: string,
+  ) {
     try {
-      return await this.nsService.getIsNameAvailable(label);
+      return await this.nsService.getIsNameAvailable(label, domain);
     } catch (error) {
       console.log({ error });
       this.logger.error('Error checking availability', error);
@@ -57,6 +60,7 @@ export class NsController {
         createCustomSubnameDataDto.label,
         createCustomSubnameDataDto.key,
         createCustomSubnameDataDto.data,
+        createCustomSubnameDataDto.domain,
       );
     } catch (error) {
       this.logger.error('Error creating custom subname data', error);
@@ -72,6 +76,7 @@ export class NsController {
       return await this.nsService.getCustomSubnameData(
         getCustomSubnameDataDto.label,
         getCustomSubnameDataDto.key,
+        getCustomSubnameDataDto.domain,
       );
     } catch (error) {
       this.logger.error('Error retrieving custom subname data', error);
@@ -89,6 +94,7 @@ export class NsController {
       const result = await this.nsService.createSubname(
         createSubnameDto.label,
         createSubnameDto.address,
+        createSubnameDto.domain,
       );
       return { message: 'Subname created successfully.', data: result };
     } catch (error) {
@@ -112,6 +118,7 @@ export class NsController {
       const metadata = await this.nsService.getSubnameMetadata(
         getSubnameMetadataDto.label,
         getSubnameMetadataDto.key,
+        getSubnameMetadataDto.domain,
       );
       return {
         message: 'Subname metadata retrieved successfully.',
@@ -171,6 +178,7 @@ export class NsController {
         createTextRecordDto.label,
         createTextRecordDto.key,
         createTextRecordDto.data,
+        createTextRecordDto.domain,
       );
       return {
         message: 'Text record created or updated successfully.',

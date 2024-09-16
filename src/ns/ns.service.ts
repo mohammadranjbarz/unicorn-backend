@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { map, catchError } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { SubnameResolutionResponse } from 'src/types/ens';
 import { firstValueFrom } from 'rxjs';
 import { throwError } from 'rxjs';
@@ -8,7 +8,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class NsService {
-  private readonly ENS_DOMAIN = 'account.eth';
   private readonly COIN_TYPE = 60; // ETH
 
   constructor(
@@ -16,8 +15,9 @@ export class NsService {
     private readonly httpService: HttpService,
   ) {}
 
-  async getIsNameAvailable(label: string) {
-    const url = `/v1/subname/availability/${label}/account.eth`;
+  async getIsNameAvailable(label: string, domain: string) {
+    console.log({});
+    const url = `/v1/subname/availability/${label}/${domain}`;
     try {
       const response = await firstValueFrom(
         this.httpService
@@ -30,13 +30,17 @@ export class NsService {
     }
   }
 
-  async createSubname(label: string, address: string): Promise<any> {
+  async createSubname(
+    label: string,
+    address: string,
+    domain: string,
+  ): Promise<any> {
     return firstValueFrom(
       this.httpService
         .post('/v1/subname/mint', {
           label,
           address,
-          domain: this.ENS_DOMAIN,
+          domain,
         })
         .pipe(map((response) => response.data)),
     );
@@ -46,12 +50,11 @@ export class NsService {
     label: string,
     key: string,
     text: string,
+    domain: string,
   ): Promise<boolean> {
     return firstValueFrom(
       this.httpService
-        .put<boolean>(
-          `/v1/subname/record/${label}/${this.ENS_DOMAIN}/${key}/${text}`,
-        )
+        .put<boolean>(`/v1/subname/record/${label}/${domain}/${key}/${text}`)
         .pipe(map((response) => response.data)),
     );
   }
@@ -68,12 +71,14 @@ export class NsService {
     );
   }
 
-  async getSubnameMetadata(label: string, key: string): Promise<string> {
+  async getSubnameMetadata(
+    label: string,
+    key: string,
+    domain: string,
+  ): Promise<string> {
     return firstValueFrom(
       this.httpService
-        .get<{ record: string }>(
-          `/v1/subname/record/${label}/${this.ENS_DOMAIN}/${key}`,
-        )
+        .get<{ record: string }>(`/v1/subname/record/${label}/${domain}/${key}`)
         .pipe(map((response) => response.data.record)),
     );
   }
@@ -82,20 +87,25 @@ export class NsService {
     label: string,
     key: string,
     data: string,
+    domain: string,
   ): Promise<boolean> {
     return firstValueFrom(
       this.httpService
-        .put<boolean>(`/v1/subname/data/${label}/${this.ENS_DOMAIN}/${key}`, {
+        .put<boolean>(`/v1/subname/data/${label}/${domain}/${key}`, {
           data,
         })
         .pipe(map((response) => response.data)),
     );
   }
 
-  async getCustomSubnameData(label: string, key: string): Promise<string> {
+  async getCustomSubnameData(
+    label: string,
+    key: string,
+    domain: string,
+  ): Promise<string> {
     return firstValueFrom(
       this.httpService
-        .get<string>(`/v1/subname/data/${label}/${this.ENS_DOMAIN}/${key}`)
+        .get<string>(`/v1/subname/data/${label}/${domain}/${key}`)
         .pipe(map((response) => response.data)),
     );
   }
