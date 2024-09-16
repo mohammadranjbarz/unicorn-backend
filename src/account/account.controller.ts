@@ -39,6 +39,9 @@ export class AccountController {
   @Get('/check')
   async getAccountByHandle(@Query('domain') handle: string) {
     const subname = handle?.split('.')[0];
+    return {
+      status: 'ok',
+    };
     if (subname === 'app')
       return {
         status: 'ok',
