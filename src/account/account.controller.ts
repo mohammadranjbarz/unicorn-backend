@@ -11,7 +11,9 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
+import { all } from 'axios';
 
+const allowedSubnames = ['moe', 'kay', 'yussdev'];
 @Controller('account')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
@@ -39,9 +41,7 @@ export class AccountController {
   @Get('/check')
   async getAccountByHandle(@Query('domain') handle: string) {
     const subname = handle?.split('.')[0];
-    return {
-      status: 'ok',
-    };
+
     if (subname === 'app')
       return {
         status: 'ok',
@@ -50,7 +50,15 @@ export class AccountController {
       throw new InternalServerErrorException(`Domain can't be empty`);
     }
     const account = await this.accountService.findByHandle(handle);
-
+    if (allowedSubnames.includes(subname)) {
+      return {
+        status: 'ok',
+      };
+    } else {
+      throw new InternalServerErrorException(
+        `Account with handle '${handle}' not found`,
+      );
+    }
     // If no account is found, throw a 404 error
     if (!account) {
       throw new InternalServerErrorException(
