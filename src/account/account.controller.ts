@@ -6,14 +6,16 @@ import {
   Patch,
   Body,
   Param,
-  NotFoundException,
   Query,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
-import { all } from 'axios';
 
-const allowedSubnames = ['moe', 'kay', 'yussdev'];
+const allowedSubnames = [
+  'moe.unicorn-wallet.com',
+  'kay.unicorn-wallet.com',
+  'yussdev.unicorn-wallet.com',
+];
 @Controller('account')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
@@ -49,8 +51,8 @@ export class AccountController {
     if (!handle) {
       throw new InternalServerErrorException(`Domain can't be empty`);
     }
-    const account = await this.accountService.findByHandle(handle);
-    if (allowedSubnames.includes(subname)) {
+    console.log({ allowedSubnames, subname });
+    if (allowedSubnames.includes(handle)) {
       return {
         status: 'ok',
       };
@@ -59,6 +61,8 @@ export class AccountController {
         `Account with handle '${handle}' not found`,
       );
     }
+    const account = await this.accountService.findByHandle(handle);
+
     // If no account is found, throw a 404 error
     if (!account) {
       throw new InternalServerErrorException(
