@@ -43,8 +43,8 @@ jobs:
           script: |
             cd unicorn-backend
             git reset --hard HEAD~1
-            git checkout main
-            git pull origin main
+            git checkout develop
+            git pull origin develop
             docker image prune -a --force
             docker compose pull
 
