@@ -1,6 +1,6 @@
 services:
   unicorn-backend1:
-    image: ghcr.io/generalmagicio/unicorn-be-staging:main
+    image: ghcr.io/generalmagicio/unicorn-be:staging
     container_name: unicorn-backend1
     restart: always
     ports:
@@ -11,7 +11,7 @@ services:
       - unicorn-backend
 
   unicorn-backend2:
-    image: ghcr.io/generalmagicio/unicorn-be-staging:main
+    image: ghcr.io/generalmagicio/unicorn-be:staging
     container_name: unicorn-backend2
     restart: always
     ports:

@@ -27,13 +27,13 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/generalmagicio/unicorn-be-staging:main
+          tags: ghcr.io/generalmagicio/unicorn-be:staging
 
   deploy:
     needs: publish
     runs-on: ubuntu-latest
     steps:
-      - name: SSH and Redeploy Production
+      - name: SSH and Redeploy Staging
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.STAGING_HOST }}
