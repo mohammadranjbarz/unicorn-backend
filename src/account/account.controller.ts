@@ -8,6 +8,7 @@ import {
   Param,
   Query,
   InternalServerErrorException,
+  Delete,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
 
@@ -86,6 +87,10 @@ export class AccountController {
   @Post('/delete-all-accounts')
   async deleteAccounts() {
     return this.accountService.deleteAccounts();
+  }
+  @Delete(':identifier')
+  async deleteAccount(@Param('identifier') identifier: string) {
+    return this.accountService.deleteAccount(identifier);
   }
   // Get account by address or verifier
   @Get(':identifier')

@@ -40,6 +40,23 @@ export class AccountService {
     }
   }
 
+  // delete accounts
+  async deleteAccount(identifier: string) {
+    try {
+      return await this.prisma.account.deleteMany({
+        where: {
+          OR: [{ address: identifier }, { verifier_address: identifier }],
+        },
+      });
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        // Prisma error code for unique constraint violation
+        throw new ConflictException('Failed to delete account');
+      }
+      throw error; // Propagate any other errors
+    }
+  }
+
   // Get account by address or verifier
   async getAccountByAddressOrVerifier(identifier: string) {
     const account = await this.prisma.account.findFirst({
