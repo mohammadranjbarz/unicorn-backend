@@ -49,6 +49,7 @@ model Account {
   last_name String?
   country String?
   got_airdropped Boolean?
+  stake_transaction_hash String?
 
   @@index([address])
   @@index([verifier_address])

@@ -65,6 +65,7 @@ export class AccountService {
     last_name?: string,
     country?: string,
     got_airdropped?: boolean,
+    stake_transaction_hash?: string,
   ) {
     const account = await this.prisma.account.findFirst({
       where: {
@@ -86,6 +87,7 @@ export class AccountService {
         last_name,
         country,
         got_airdropped,
+        stake_transaction_hash,
       },
     });
   }

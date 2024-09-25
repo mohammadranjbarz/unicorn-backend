@@ -29,6 +29,10 @@ export class AccountController {
     @Body('profile_image') profile_image?: string,
     @Body('handle') handle?: string,
     @Body('subscriptions') subscriptions?: string[],
+    @Body('first_name') first_name?: string,
+    @Body('last_name') last_name?: string,
+    @Body('country') country?: string,
+    @Body('got_airdropped') got_airdropped?: boolean,
   ) {
     return this.accountService.createAccount({
       address,
@@ -37,6 +41,10 @@ export class AccountController {
       profile_image,
       handle,
       subscriptions: subscriptions || [],
+      first_name,
+      last_name,
+      country,
+      got_airdropped,
     });
   }
 
@@ -96,6 +104,7 @@ export class AccountController {
     @Body('last_name') last_name?: string,
     @Body('country') country?: string,
     @Body('got_airdropped') got_airdropped?: boolean,
+    @Body('stake_transaction_hash') stake_transaction_hash?: string,
   ) {
     return this.accountService.updateAccount(
       identifier,
@@ -106,6 +115,7 @@ export class AccountController {
       last_name,
       country,
       got_airdropped,
+      stake_transaction_hash,
     );
   }
 }
