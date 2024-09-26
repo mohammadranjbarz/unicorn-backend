@@ -1,10 +1,10 @@
 name: staging-pipeline
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - develop
-  workflow_dispatch:
 
 jobs:
   publish:
