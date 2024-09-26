@@ -46,7 +46,7 @@ jobs:
             git checkout develop
             git pull origin develop
             docker image prune -a --force
-            docker compose pull
+            docker compose -f docker-compose-staging.yml pull
 
             ## Update each backend service one by one
             docker compose -f docker-compose-staging.yml up -d --no-deps --scale unicorn-backend1=0 --scale unicorn-backend2=1
