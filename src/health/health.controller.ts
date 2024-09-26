@@ -14,7 +14,7 @@ export class HealthController {
       await this.prisma.$queryRaw`SELECT 1`;
 
       return {
-        status: 'ok',
+        status: 'ok2',
         database: 'connected',
       };
     } catch (error) {
