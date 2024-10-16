@@ -11,6 +11,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import config from './utils/config';
 import { AccountModule } from './account/account.module';
 import { HealthModule } from './health/health.module';
+import { EmailModule } from 'src/email/email.module';
+import { EventModule } from 'src/events/event.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { HealthModule } from './health/health.module';
     AccountModule,
     PrismaModule,
     HealthModule,
+    EmailModule,
+    EventModule,
   ],
   controllers: [AppController],
   providers: [AppService],
