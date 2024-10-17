@@ -8,30 +8,38 @@ import {
   Param,
   Query,
   InternalServerErrorException,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
+import { JwtAuthGuard } from 'src/guards/jwt.guards';
 
 const allowedSubnames = [
   'moe.unicorn-wallet.com',
   'kay.unicorn-wallet.com',
   'yussdev.unicorn-wallet.com',
 ];
+
 @Controller('account')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
   // Create a new account
+  // Create a new account
+  @UseGuards(JwtAuthGuard) // Apply the guard only to this endpoint
   @Post()
   async createAccount(
-    @Body('address') address: string,
+    @Req() req: any, // Access the request object to get the decoded token info
     @Body('verifier_address') verifier_address: string,
     @Body('email') email: string,
     @Body('profile_image') profile_image?: string,
     @Body('handle') handle?: string,
     @Body('subscriptions') subscriptions?: string[],
   ) {
+    const address = req.user.address; // Extract the address from the token
+
     return this.accountService.createAccount({
-      address,
+      address, // Use the address from the token instead of the input
       verifier_address,
       email,
       profile_image,
@@ -75,10 +83,12 @@ export class AccountController {
       status: 'ok',
     };
   }
+
   @Post('/delete-all-accounts')
   async deleteAccounts() {
     return this.accountService.deleteAccounts();
   }
+
   // Get account by address or verifier
   @Get(':identifier')
   async getAccount(@Param('identifier') identifier: string) {

@@ -1,17 +1,36 @@
-import { Controller, Get, Post, Logger, Res, Req } from '@nestjs/common';
-
+import {
+  Controller,
+  Get,
+  Post,
+  Logger,
+  Res,
+  Req,
+  Body,
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { UsersService } from 'src/user/users.service';
 import { ApiResponse } from '@nestjs/swagger';
 import { AuthedReq } from 'src/utils/types/AuthedReq.type';
 import { PrismaService } from 'src/prisma/prisma.service';
-// import { STAGING_API } from 'src/utils';
-// import { FlowService } from 'src/flow/flow.service';
+import { VerifyLoginPayloadParams } from '@thirdweb-dev/auth'; // Correct imports
+import { verifyLoginPayload, buildLoginPayload } from '@thirdweb-dev/auth';
+
+import { sign } from 'jsonwebtoken';
+import { BuildLoginPayloadParams } from '@thirdweb-dev/auth/dist/declarations/src/core/schema/functions';
+import {
+  LoginOptions,
+  LoginPayload,
+} from '@thirdweb-dev/auth/src/core/schema/login';
 
 @Controller({ path: 'auth' })
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
+
+  private readonly jwtSecret = process.env.JWT_SECRET!;
+
   constructor(
     private readonly authService: AuthService,
     private readonly prismaService: PrismaService,
@@ -33,81 +52,84 @@ export class AuthController {
 
   @Post('/logout')
   async logout(@Res() res: Response) {
-    // expire the token from the db because the expiration time of the tokens are rather long
-    // res.clearCookie('auth', {
-    //   httpOnly: true,
-    //   sameSite: process.env.NODE_ENV === 'staging' ? 'none' : 'lax',
-    //   domain: process.env.NODE_ENV === 'development' ? undefined : STAGING_API,
-    //   secure: true,
-    // });
     res.send('Logged out.');
   }
 
-  // @ApiResponse({ status: 200, description: 'Sets an auth cookie' })
-  // @Post('/login')
-  // async login(@Res() res: Response, @Body() { message, signature }: LoginDTO) {
-  //   const { address, nonce } = message;
-  //   const isAuthentic = await this.authService.verifyUser(message, signature);
-  //   if (!isAuthentic) throw new UnauthorizedException('Invalid signature');
-  //   let user = await this.prismaService.user.findFirst({
-  //     where: { address },
-  //   });
-  //   if (!user) {
-  //     user = await this.usersService.create({ address, isBadgeHolder: true });
-  //   }
+  /**
+   * Get login payload (challenge)
+   * This endpoint generates the login payload for the user to sign with their wallet.
+   */
+  @Get('/login')
+  async getLoginPayload(@Req() req: AuthedReq, @Res() res: Response) {
+    const { address, chainId } = req.query;
+    if (!address || typeof address !== 'string') {
+      throw new BadRequestException('Address is required');
+    }
 
-  //   if (!user)
-  //     throw new UnprocessableEntityException('User can not be created');
+    try {
+      // Generate the login payload (challenge)
+      const loginPayload = await buildLoginPayload({
+        wallet: {
+          getAddress: () => {
+            return address;
+          },
+          type: 'evm',
+        } as any,
+        options: {
+          domain: process.env.CLIENT_DOMAIN as string,
+          chainId: chainId as string,
+        } as LoginOptions,
+      } as BuildLoginPayloadParams);
+      // const loginPayload = generateLoginPayload({
+      //   domain: process.env.CLIENT_DOMAIN as string,
+      // });
+      console.log('loginPayload', loginPayload);
+      res.status(200).json(loginPayload);
+    } catch (error) {
+      this.logger.error('Error generating login payload', error);
+      throw new BadRequestException('Failed to generate login payload');
+    }
+  }
 
-  //   await this.prismaService.nonce.deleteMany({
-  //     where: {
-  //       user_id: user.id,
-  //     },
-  //   });
+  /**
+   * Verify signed payload and issue JWT
+   * This endpoint verifies the signed payload and returns a JWT token if valid.
+   */
+  @Post('/login')
+  async verifyLoginPayload(
+    @Body()
+    {
+      address,
+      signedPayload,
+    }: { address: string; signedPayload: LoginPayload },
+    @Res() res: Response,
+  ) {
+    if (!address || !signedPayload) {
+      throw new BadRequestException('Address and signedPayload are required');
+    }
+    try {
+      // Verify the signed payload
+      const isValid = await verifyLoginPayload({
+        payload: signedPayload,
+        options: {
+          domain: process.env.CLIENT_DOMAIN as string,
+        },
+        clientOptions: {},
+      });
 
-  //   await this.prismaService.nonce.updateMany({
-  //     where: {
-  //       nonce,
-  //     },
-  //     data: {
-  //       user_id: user.id,
-  //       expires_at: `${Date.now() + this.authService.TokenExpirationDuration}`,
-  //     },
-  //   });
+      if (!isValid) {
+        throw new UnauthorizedException('Invalid signed payload');
+      }
 
-  //   // const isFirstLogin = await this.prismaService.share.findFirst({
-  //   //   where: { user_id: user.id },
-  //   // });
+      // Issue JWT
+      const token = sign({ address }, this.jwtSecret, {
+        expiresIn: '1d', // JWT expiration time
+      });
 
-  //   // if (isFirstLogin === null)
-  //   //   await this.flowService.populateInitialRanking(user.id);
-  //   // res.cookie('auth', nonce, {
-  //   //   httpOnly: true,
-  //   //   sameSite: process.env.NODE_ENV === 'staging' ? 'none' : 'lax',
-  //   //   domain: process.env.NODE_ENV === 'development' ? undefined : STAGING_API,
-  //   //   secure: true,
-  //   //   expires: new Date(Date.now() + this.authService.TokenExpirationDuration),
-  //   // });
-
-  //   // return nonce;
-
-  //   res.status(200).send(nonce);
-  // }
-
-  // @ApiResponse({
-  //   status: 200,
-  //   type: String,
-  //   description: 'a 48 character alphanumerical nonce is returned',
-  // })
-  // @Get('/nonce')
-  // async getNonce() {
-  //   const nonce = this.authService.generateNonce();
-  //   await this.prismaService.nonce.create({
-  //     data: {
-  //       nonce,
-  //       expires_at: `${Date.now() + this.authService.NonceExpirationDuration}`,
-  //     },
-  //   });
-  //   return nonce;
-  // }
+      res.status(200).json({ token });
+    } catch (error) {
+      this.logger.error('Error verifying signed payload', error);
+      throw new UnauthorizedException('Failed to verify and generate token');
+    }
+  }
 }
