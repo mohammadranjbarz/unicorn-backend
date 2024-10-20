@@ -51,6 +51,10 @@ model Account {
   got_airdropped Boolean?
   stake_transaction_hash String?
 
+  has_buff_club_member_badge Boolean?
+  has_steward_club_member_badge Boolean?
+
+
   @@index([address])
   @@index([verifier_address])
 }
