@@ -5,9 +5,10 @@ import {
   Param,
   HttpException,
   HttpStatus,
-  Body,
-} from '@nestjs/common';
+  Body, UseGuards
+} from "@nestjs/common";
 import { SporkDAOService } from './spork.service';
+import { JwtAuthGuard } from "src/guards/jwt.guards";
 
 @Controller({ path: 'spork' })
 export class SporkDAOController {
@@ -53,11 +54,13 @@ export class SporkDAOController {
     }
   }
 
+  @UseGuards(JwtAuthGuard) // Apply the guard only to this endpoint
   @Post('api/airdrop')
   async airdropSpork(@Body() body: { address: string; amount: string }) {
     try {
+      const address = req.user.address; // Extract the address from the token
       const data = await this.sporkDAOService.airDropSpork(
-        body.address,
+        address,
         body.amount,
       );
       if (data) {

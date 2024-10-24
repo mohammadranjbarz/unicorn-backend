@@ -123,7 +123,7 @@ export class AuthController {
 
       // Issue JWT
       const token = sign({ address }, this.jwtSecret, {
-        expiresIn: '1d', // JWT expiration time
+        expiresIn: '30d', // JWT expiration time
       });
 
       res.status(200).json({ token });

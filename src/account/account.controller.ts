@@ -96,6 +96,7 @@ export class AccountController {
   }
 
   // Update username or profile_image by address or verifier
+  @UseGuards(JwtAuthGuard) // Apply the guard only to this endpoint
   @Patch(':identifier')
   async updateAccount(
     @Param('identifier') identifier: string,
@@ -107,6 +108,19 @@ export class AccountController {
     @Body('country') country?: string,
     @Body('got_airdropped') got_airdropped?: boolean,
   ) {
+    const address = req.user.address; // Extract the address from the token
+    // find account by address to make sure the user is updating their own account
+    const account = await this.accountService.getAccountByAddressOrVerifier(
+      address,
+    );
+    if (!account) {
+      throw new InternalServerErrorException(`Account not found`);
+    }
+    if (account.address?.toLowerCase() !== address?.toLowerCase()) {
+      throw new InternalServerErrorException(
+        `You are not authorized to update this account`,
+      );
+    }
     return this.accountService.updateAccount(
       identifier,
       handle,
