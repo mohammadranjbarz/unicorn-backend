@@ -99,6 +99,7 @@ export class AccountController {
   @UseGuards(JwtAuthGuard) // Apply the guard only to this endpoint
   @Patch(':identifier')
   async updateAccount(
+    @Req() req: any, // Access the request object to get the decoded token info
     @Param('identifier') identifier: string,
     @Body('handle') handle?: string,
     @Body('profile_image') profile_image?: string,
