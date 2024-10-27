@@ -33,6 +33,29 @@
 $ npm install
 ```
 
+## Database
+
+Run the following command to create a local postgres database
+
+```bash
+$ docker-compose -f docker-compose-local-postgres.yml up -d
+```
+
+Run the following command to execute migration files
+
+```bash
+$  npx prisma migrate dev
+```
+
+## Environment Variables
+Add these environment variables to your .env file
+
+```bash
+POSTGRES_PRISMA_URL=postgresql://postgres@localhost:5545/unicorn
+POSTGRES_URL_NON_POOLING=postgresql://postgres@localhost:5545/unicorn
+```
+
+
 ## Running the app
 
 ```bash
@@ -70,5 +93,6 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 - Twitter - [@nestframework](https://twitter.com/nestframework)
 
 ## License
+
 
 Nest is [MIT licensed](LICENSE).

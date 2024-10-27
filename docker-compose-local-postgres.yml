@@ -1,0 +1,24 @@
+version: '3.3'
+
+services:
+  unicorn-postgres:
+    # If you want to use following db container in the application container, you should following lines to the .env file
+    #POSTGRES_PRISMA_URL=postgresql://postgres@localhost:5545/unicorn
+    #POSTGRES_URL_NON_POOLING=postgresql://postgres@localhost:5545/unicorn
+
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=unicorn
+      - POSTGRES_USER=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - "5545:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+
+
+volumes:
+  db-data:
+
+
