@@ -35,6 +35,10 @@ export class AccountController {
     @Body('profile_image') profile_image?: string,
     @Body('handle') handle?: string,
     @Body('subscriptions') subscriptions?: string[],
+    @Body('first_name') first_name?: string,
+    @Body('last_name') last_name?: string,
+    @Body('country') country?: string,
+    @Body('got_airdropped') got_airdropped?: boolean,
   ) {
     const address = req.user.address; // Extract the address from the token
 
@@ -45,6 +49,10 @@ export class AccountController {
       profile_image,
       handle,
       subscriptions: subscriptions || [],
+      first_name,
+      last_name,
+      country,
+      got_airdropped,
     });
   }
 
@@ -89,6 +97,11 @@ export class AccountController {
     return this.accountService.deleteAccounts();
   }
 
+  @Delete(':identifier')
+  async deleteAccount(@Param('identifier') identifier: string) {
+    return this.accountService.deleteAccount(identifier);
+  }
+
   // Get account by address or verifier
   @Get(':identifier')
   async getAccount(@Param('identifier') identifier: string) {
@@ -108,6 +121,7 @@ export class AccountController {
     @Body('last_name') last_name?: string,
     @Body('country') country?: string,
     @Body('got_airdropped') got_airdropped?: boolean,
+    @Body('stake_transaction_hash') stake_transaction_hash?: string,
   ) {
     const address = req.user.address; // Extract the address from the token
     // find account by address to make sure the user is updating their own account
@@ -131,6 +145,7 @@ export class AccountController {
       last_name,
       country,
       got_airdropped,
+      stake_transaction_hash,
     );
   }
 }

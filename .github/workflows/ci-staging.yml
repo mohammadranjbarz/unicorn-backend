@@ -1,10 +1,10 @@
-name: prod-pipeline
+name: staging-pipeline
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - develop
 
 jobs:
   publish:
@@ -27,38 +27,38 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/generalmagicio/unicorn-be:main
+          tags: ghcr.io/generalmagicio/unicorn-be:staging
 
   deploy:
     needs: publish
     runs-on: ubuntu-latest
     steps:
-      - name: SSH and Redeploy Production
+      - name: SSH and Redeploy Staging
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.PROD_HOST }}
-          username: ${{ secrets.PROD_USERNAME }}
-          key: ${{ secrets.PROD_PRIVATE_KEY }}
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USERNAME }}
+          key: ${{ secrets.STAGING_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd unicorn-backend
             git reset --hard HEAD~1
-            git checkout main
-            git pull origin main
+            git checkout develop
+            git pull origin develop
             docker image prune -a --force
-            docker compose pull
+            docker compose -f docker-compose-staging.yml pull
 
             ## Update each backend service one by one
-            docker compose up -d --no-deps --scale unicorn-backend1=0 --scale unicorn-backend2=1
-            docker compose up -d
+            docker compose -f docker-compose-staging.yml up -d --no-deps --scale unicorn-backend1=0 --scale unicorn-backend2=1
+            docker compose -f docker-compose-staging.yml up -d
             # Check the health of unicorn-backend1
             if [ "$(docker inspect --format='{{json .State.Status}}' unicorn-backend1)" != "\"running\"" ]; then
               echo "unicorn-backend1 is not running, stopping deployment"
               exit 1
             fi
 
-            docker compose up -d --no-deps --scale unicorn-backend1=1 --scale unicorn-backend2=0
-            docker compose up -d
+            docker compose -f docker-compose-staging.yml up -d --no-deps --scale unicorn-backend1=1 --scale unicorn-backend2=0
+            docker compose -f docker-compose-staging.yml up -d
             # Check the health of unicorn-backend2
             if [ "$(docker inspect --format='{{json .State.Status}}' unicorn-backend2)" != "\"running\"" ]; then
               echo "unicorn-backend1 is not running, stopping deployment"

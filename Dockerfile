@@ -7,5 +7,6 @@ RUN npm install -g @nestjs/cli
 RUN npm install
 COPY . .
 RUN npm run build
+
 EXPOSE 3000
 ENTRYPOINT ["sh", "-c", "npx prisma migrate deploy && npm run start"]
