@@ -54,14 +54,15 @@ export class SporkDAOController {
     }
   }
 
-  @UseGuards(JwtAuthGuard) // Apply the guard only to this endpoint
+  // @UseGuards(JwtAuthGuard) // Apply the guard only to this endpoint
   @Post('api/airdrop')
   async airdropSpork(
-    @Req() req: any, // Access the request object to get the decoded token info
+    // @Req() req: any, // Access the request object to get the decoded token info
     @Body() body: { address: string; amount: string
     }) {
     try {
-      const address = req.user.address; // Extract the address from the token
+      // const address = req.user.address; // Extract the address from the token
+      const address = body.address; // Extract the address from the token
       const data = await this.sporkDAOService.airDropSpork(
         address,
         body.amount,
