@@ -9,8 +9,8 @@ import {
   Query,
   InternalServerErrorException,
   Req,
-  UseGuards,
-} from '@nestjs/common';
+  UseGuards, Delete
+} from "@nestjs/common";
 import { AccountService } from './account.service';
 import { JwtAuthGuard } from 'src/guards/jwt.guards';
 
